@@ -1,56 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Body Fat Predictor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            padding: 40px;
-            text-align: center;
-        }
-        form {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: inline-block;
-        }
-        input {
-            margin: 10px;
-            padding: 10px;
-            width: 80%;
-        }
-        button {
-            padding: 10px 20px;
-            background: #28a745;
-            color: #fff;
-            border: none;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 1.3em;
-            color: #333;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Student Grade Predictor</title>
+<style>
+  body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #f7f7f7, #f2f2f2);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  justify-content: center;
+}
+
+h1 {
+  color: #2c3e50;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+form {
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  width: 350px;
+  transition: transform 0.3s ease;
+}
+
+form:hover {
+  transform: scale(1.02);
+}
+
+label {
+  display: block;
+  margin-top: 20px;
+  font-weight: bold;
+  color: #34495e;
+  transition: color 0.3s ease;
+}
+
+label:hover {
+  color: #2980b9;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #bdc3c7;
+  font-size: 18px;
+  transition: border-color 0.3s ease;
+}
+
+input[type="number"]:focus {
+  border-color: #2980b9;
+  box-shadow: 0 0 8px rgba(41, 128, 185, 0.2);
+}
+
+button {
+  margin-top: 25px;
+  width: 100%;
+  background: #2980b9;
+  border: none;
+  color: white;
+  padding: 15px;
+  font-size: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+  background: #1c5980;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(2px);
+}
+
+#result {
+  margin-top: 25px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #27ae60;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+#result.error {
+  color: #e74c3c;
+}
+</style>
 </head>
 <body>
-    <h1>Body Fat % Estimator</h1>
-    <form method="post">
-        <input type="number" name="age" placeholder="Age (years)" step="any" required><br>
-        <input type="number" name="weight" placeholder="Weight (lbs)" step="any" required><br>
-        <input type="number" name="height" placeholder="Height (inches)" step="any" required><br>
-        <input type="number" name="abdomen" placeholder="Abdomen Circumference (cm)" step="any" required><br>
-        <button type="submit">Predict Body Fat %</button>
-    </form>
+  <h1>Student Grade Predictor</h1>
+  <form id="gradeForm">
+    <label for="Maths">Maths</label>
+    <input type="text" id="Maths" name="Maths" min="0" max="100" required />
+    
+    <label for="Physics">Physics</label>
+    <input type="text" id="Physics" name="Physics" min="0" max="100" required />
+    
+    <label for="Biology">Biology</label>
+    <input type="text" id="Biology" name="Biology" min="0" max="100" required />
+    
+    <label for="Social">Social</label>
+    <input type="text" id="Social" name="Social" min="0" max="100" required />
+    
+    <label for="Telugu">Telugu</label>
+    <input type="text" id="Telugu" name="Telugu" min="0" max="100" required />
+    
+    <label for="Hindi">Hindi</label>
+    <input type="text" id="Hindi" name="Hindi" min="0" max="100" required />
+    
+    <label for="English">English</label>
+    <input type="text" id="English" name="English" min="0" max="100" required />
+    
+    <button type="submit">Predict Grade</button>
+  </form>
 
-    {% if prediction is not none %}
-    <div class="result">
-        <p><strong>Predicted Body Fat %:</strong> {{ prediction }}</p>
-    </div>
-    {% endif %}
+  <div id="result"></div>
+
+<script>
+  const form = document.getElementById('gradeForm');
+  const resultDiv = document.getElementById('result');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+      Maths: parseInt(form.Maths.value),
+      Physics: parseInt(form.Physics.value),
+      Biology: parseInt(form.Biology.value),
+      Social: parseInt(form.Social.value),
+      Telugu: parseInt(form.Telugu.value),
+      Hindi: parseInt(form.Hindi.value),
+      English: parseInt(form.English.value),
+    };
+
+    resultDiv.textContent = 'Predicting...';
+
+    try {
+      const response = await fetch('http://127.0.0.1:5000/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+      });
+
+      const json = await response.json();
+      resultDiv.textContent = Predicted Grade: ${json.predicted_grade};
+    } catch (error) {
+      resultDiv.textContent = 'Error predicting grade. Make sure the server is running.';
+    }
+  });
+</script>
 </body>
 </html>
